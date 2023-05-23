@@ -8,8 +8,10 @@ from sklearn.datasets import make_blobs
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import DBSCAN
 from sklearn import metrics
-import Tracker_library as Lbr
 r.gStyle.SetOptStat(0)
+
+import Tracker_library as Lbr
+import Tools_library as Tools
 
 ####################################################################################
 #Importation des data
@@ -81,7 +83,7 @@ A = Lbr.Lbr_MinuitFit(Cluster, Index_cluster,z,t)
 Lbr.Lbr_Comptage(Cluster_BIB)
 Lbr.Lbr_Comptage(Cluster_top)
 
-Lbr.Lbr_Comptage(Cluster)
+Tools.Comptage2(Cluster)
 
 
 

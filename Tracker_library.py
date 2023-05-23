@@ -10,13 +10,26 @@ from sklearn.cluster import DBSCAN
 from sklearn import metrics
 r.gStyle.SetOptStat(0)
 
+import Tools_library as Tools
+
+####################################################################################
+'''Information
+Espacement des layers du HGTD avec les sample s4038_..._.HIT
+Si pour chaque HGTD le layer le plus proche du PI est noté 0 et le plus éloigné est 
+noté 3 (donc 0 1 2 3), on a comme distance entre chaque layer:
+Entre 0 et 1: 10mm  Temps de parcour pour c : 0.33 nanoseconde
+Entre 1 et 2: 15mm  Temps de parcour pour c : 0.50 nanoseconde
+Entre 2 et 3: 10mm  Temps de parcour pour c : 0.33 nanoseconde
+ '''
+####################################################################################
+
 
 
 ####################################################################################
-'''Importation des data avec creation du vecteur R et en eliminant les hit isole et 
-les bug '''
+'''Importation des data tout les hit mélangé avec creation du vecteur R et en 
+eliminant les hit isole et les bug  '''
 ####################################################################################
-def Lbr_ImportData(NomTree):
+def Lbr_ImportDataAllMixed(NomTree):
     x,y,z,t=[],[],[],[]
     x2,y2,z2,t2=[],[],[],[]
     x3,y3,z3,t3=[],[],[],[]
@@ -51,11 +64,68 @@ def Lbr_ImportData(NomTree):
 
     return x,y,z,t,R
 
+####################################################################################
+'''Importation des data event par event avec creation du vecteur R et en 
+eliminant les hit isole et les bug  '''
+####################################################################################
+
+def Lbr_ImportData(NomTree):
+    x,y,z,t=[],[],[],[]
+    x2,y2,z2,t2=[],[],[],[]
+    x3,y3,z3,t3=[],[],[],[]
+    R=[]
+
+    for event in NomTree:
+	    x2.append(list(event.HGTD_x))
+	    y2.append(list(event.HGTD_y))
+	    z2.append(list(event.HGTD_z))
+	    t2.append(list(event.HGTD_time))
+
+    
+    for x1,y1,z1,t1 in zip(x2,y2,z2,t2):
+	    if x1 not in x and len(x1)>1:
+        		y.append(y1)
+        		x.append(x1)
+        		z.append(z1)
+        		t.append(t1)
+
+    for i in range(len(x)):
+    	X=[]
+    	X.append(x[i])
+    	X.append(y[i])
+    	X.append(t[i])
+    	R.append(X)
+
+    return x,y,z,t,R
 
 
 
-
-
+####################################################################################
+'''Mélanger event par event le BIB et le top, sachant que plusieurs
+event BIB iront dans chaque event top (10 event top pour 1380 event BIB) '''
+####################################################################################
+def Lbr_Melange(x_BIB, y_BIB, z_BIB, t_BIB, R_BIB,x_top, y_top, z_top, t_top, R_top):
+	a=0
+	x_mix=[]
+	y_mix=[]
+	z_mix=[]
+	t_mix=[]
+	R_mix=[]
+	for i in range(len(x_BIB)):
+		xi=x_BIB[i]+x_top[a]
+		yi=y_BIB[i]+y_top[a]
+		zi=z_BIB[i]+z_top[a]
+		ti=t_BIB[i]+t_top[a]
+		Ri=R_BIB[i]+R_top[a]
+		x_mix.append(xi)
+		y_mix.append(yi)
+		z_mix.append(zi)
+		t_mix.append(ti)
+		R_mix.append(Ri)
+		a+=1
+		if a==len(x_top):
+			a=0
+	return x_mix, y_mix, z_mix, t_mix, R_mix
 ####################################################################################
 '''Creation de l'indexage des layers
 pour HGTD droit (z negatif) du PI -> exterieur: 3 2 1 0
@@ -92,6 +162,21 @@ def Lbr_IndexLayerZ(VarZ):
 
 
 
+####################################################################################
+'''Regarde les events qui traverse les deux HGTD et touche au moins 3 layer
+puis stock ces event dans IndexAllHGTD'''
+####################################################################################
+IndexAllHGTD=[]
+def Lbr_TraverseAll(index1):
+	for i in range(len(index1)):
+		ind_lay=[]
+		for j in range(1, len(index1[i])):
+			if (index1[i][j-1] - index1[i][j])>0 and index1[i][j] not in ind_lay: 
+				ind_lay.append(index1[i][j-1])
+		if len(ind_lay)>3:
+			if (7  in ind_lay or  6 in ind_lay  or 5  in ind_lay  or 4 in ind_lay) and (3 in ind_lay or 2 in ind_lay  or 1 in ind_lay  or 0 in ind_lay ):
+				IndexAllHGTD.append(ind_lay)
+	return IndexAllHGTD
 
 ####################################################################################
 '''Creation du clustering avec les vecteur R  
@@ -147,21 +232,6 @@ def Lbr_Clustering(R,index1,VarT):
 physique'''
 ####################################################################################
 
-
-		
-def est_croissante(lst):
-    return all(lst[i] <= lst[i+1] for i in range(len(lst)-1))
-
-def est_decroissante(lst):
-    return all(lst[i] >= lst[i+1] for i in range(len(lst)-1))
-
-def est_positif(lst):
-    return all(element >= 0 for element in lst)
-
-def est_negatif(lst):
-    return all(element <= 0 for element in lst)
-
-
 def Lbr_CleanCluster(Cluster1,Index_cluster1,Index_layer1,t_index1):
 	print(len(Cluster1))
 	Cluster=[]
@@ -192,7 +262,7 @@ def Lbr_CleanCluster(Cluster1,Index_cluster1,Index_layer1,t_index1):
 
 
 	for i in range(len(Index_layer2)):
-		if ( est_croissante(Index_layer2[i]) or est_decroissante(Index_layer2[i]) ):
+		if ( Tools.croissante(Index_layer2[i]) or Tools.decroissante(Index_layer2[i]) ):
 			Cluster.append(Cluster2[i])
 			Index_cluster.append(Index_cluster2[i])	
 			Index_layer.append(Index_layer2[i])
@@ -205,7 +275,7 @@ def Lbr_CleanCluster(Cluster1,Index_cluster1,Index_layer1,t_index1):
 	Index_cluster=[]
 	Cluster=[]
 	for i in range(len(Index_layer2)):
-		if  ( est_positif(Index_layer2[i]) or est_negatif(Index_layer2[i]) ) :
+		if  ( Tools.positif(Index_layer2[i]) or Tools.negatif(Index_layer2[i]) ) :
 			Cluster.append(Cluster2[i])
 			Index_cluster.append(Index_cluster2[i])	
 			Index_layer.append(Index_layer2[i])
@@ -220,7 +290,7 @@ def Lbr_CleanCluster(Cluster1,Index_cluster1,Index_layer1,t_index1):
 	Index_cluster=[]
 	Cluster=[]
 	for i in range(len(Index_layer2)):
-		if  ( est_positif(Index_layer2[i]) or est_negatif(Index_layer2[i]) ) :
+		if  ( Tools.positif(Index_layer2[i]) or Tools.negatif(Index_layer2[i]) ) :
 			Cluster.append(Cluster2[i])
 			Index_cluster.append(Index_cluster2[i])	
 			Index_layer.append(Index_layer2[i])
@@ -235,7 +305,7 @@ def Lbr_CleanCluster(Cluster1,Index_cluster1,Index_layer1,t_index1):
 	Cluster=[]
 
 	for i in range(len(Index_layer2)):
-		if ( est_croissante(Index_layer2[i]) or est_decroissante(Index_layer2[i]) ) and ( est_positif(Index_layer2[i]) or est_negatif(Index_layer2[i]) ) and ( est_croissante(t_index2[i]) or est_decroissante(t_index2[i]) ):
+		if ( Tools.croissante(Index_layer2[i]) or Tools.decroissante(Index_layer2[i]) ) and ( Tools.positif(Index_layer2[i]) or Tools.negatif(Index_layer2[i]) ) and ( Tools.croissante(t_index2[i]) or Tools.decroissante(t_index2[i]) ):
 			Cluster.append(Cluster2[i])
 			Index_cluster.append(Index_cluster2[i])	
 			Index_layer.append(Index_layer2[i])
@@ -333,12 +403,3 @@ def Lbr_GraphCluster(R):
 
 
 
-####################################################################################
-'''Compter le nombre de hit qu'on garde'''
-####################################################################################
-def Lbr_Comptage(Cluster):
-	a=0
-	for event in Cluster:
-		for hit in event:
-			a+=1
-	print("Nombre de Hit total", a)
