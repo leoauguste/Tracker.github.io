@@ -34,6 +34,16 @@ def negatif(lst):
 
 
 ####################################################################################
+'''Regarde si une liste de nombre a que des zero ou que des 1'''
+####################################################################################
+def ZeroBIB(lst):
+    return all(element == 0 for element in lst)
+
+def OneTop(lst):
+    return all(element == 1 for element in lst)
+
+
+####################################################################################
 '''Compter le nombre de hit dans une list'''
 ####################################################################################
 def Comptage(Liste,nom_liste):
@@ -44,11 +54,23 @@ def Comptage(Liste,nom_liste):
 
 
 ####################################################################################
-'''Compter le nombre de hit dans une liste de liste'''
+'''Compter le nombre de trace dans une liste de liste'''
 ####################################################################################
 def Comptage2(Liste,nom_liste):
     a = 0
     for event in Liste:
         for hit in event:
             a += 1
-    print("Nombre de Hit total:",nom_liste, a)
+    print("Nombre de Trace total:",nom_liste, a)
+
+
+####################################################################################
+'''Compter le nombre de hit dans une liste de liste de liste'''
+####################################################################################
+def Comptage3(Liste,nom_liste):
+    a = 0
+    for event in Liste:
+        for hit in event:
+            for nb in hit:
+                a += 1
+    print("Nombre de hit total:",nom_liste, a)
