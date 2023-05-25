@@ -1,6 +1,7 @@
 import ROOT as r
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
 import scipy
 import scipy.stats
 from iminuit import Minuit
@@ -297,7 +298,7 @@ def Lbr_Clustering(R_mix,index1,VarT,BIB):
 		y=[row[1] for row in R1]
 		t=[row[2] for row in R1]
 		plt.scatter(x, y, t) #Les 3 colone x,y,t qui nous serviront pour faire les cluster
-		db = DBSCAN(eps=0.005, min_samples=2).fit(R1) #esp= distance entre chaque hit, min_samples -> nombre minimum de hit pour faire un cluster 
+		db = DBSCAN(eps=0.05, min_samples=2).fit(R1) #esp= distance entre chaque hit, min_samples -> nombre minimum de hit pour faire un cluster 
 		labels = db.labels_  #etiquettes les hit dans les clusers -> labels[i] contient l'etiquette du i-eme point de donnees. 
 		n_clusters = len(set(labels)) - (1 if -1 in labels else 0) #compte le nombre de cluster
 		n_noise = list(labels).count(-1) #compte le nombre de point sans cluster
@@ -460,6 +461,98 @@ def Lbr_MinuitFit(Cluster, Index_cluster, VarZ, VarT):
 		A.append(m.values['a'])
 	return A
 
+
+
+
+####################################################################################
+'''On regarde les traces qui sont valide'''
+####################################################################################
+def Lbr_AnalyseTrace(Coef,Index_layer,BIB_true):
+	NombreTotalTrace=0
+	NombreTotalTraceTrue=0
+	#HGTD gauche -> HGTDG
+	HGTDG_NombreTotalTrace=0
+	HGTDG_NombreTotalTraceTrue=0
+	HGTDG_NombreBIB=0
+	HGTDG_NombreBIBTrue=0
+	HGTDG_NombreTop=0
+	HGTDG_NombreTopTrue=0
+	#HGTD Droit -> HGTDD
+	HGTDD_NombreTotalTrace=0
+	HGTDD_NombreTotalTraceTrue=0
+	HGTDD_NombreBIB=0
+	HGTDD_NombreBIBTrue=0
+	HGTDD_NombreTop=0
+	HGTDD_NombreTopTrue=0
+
+
+	for i in range(len(Coef)):
+		for j in range(len(Coef[i])):
+			NombreTotalTrace += 1
+			if Coef[i][j] > 0: #top
+				HGTDG_NombreTop += 1 
+				if Tools.negatif(Index_layer[i][j]) and Tools.OneTop(BIB_true[i][j]):
+					HGTDG_NombreTopTrue += 1
+					NombreTotalTraceTrue += 1
+			if Coef[i][j] < 0:
+				if Tools.negatif(Index_layer[i][j]):
+					HGTDG_NombreBIB += 1
+					HGTDG_NombreTotalTrace += 1
+					if Tools.ZeroBIB(BIB_true[i][j]):
+						HGTDG_NombreBIBTrue += 1 
+						NombreTotalTraceTrue += 1
+						HGTDG_NombreTotalTraceTrue += 1
+				if Tools.positif(Index_layer[i][j]):
+					HGTDD_NombreTotalTrace += 1
+					HGTDD_NombreTop += 1
+					if Tools.ZeroBIB(BIB_true[i][j]):
+						HGTDD_NombreTotalTraceTrue += 1
+						NombreTotalTraceTrue += 1
+						HGTDD_NombreBIBTrue += 1
+					if Tools.OneTop(BIB_true[i][j]):
+						HGTDD_NombreTotalTraceTrue += 1
+						NombreTotalTraceTrue += 1
+						HGTDD_NombreTopTrue += 1
+
+	#Total
+	dataTotal = {'eps=05': ['Nombre de Cluster'],
+        'Total':  [NombreTotalTrace],
+        'True': [NombreTotalTraceTrue],
+		'Pourcentage': [(100*NombreTotalTraceTrue)/NombreTotalTrace]}
+	df_total = pd.DataFrame(dataTotal)
+
+	fig, ax = plt.subplots()
+	ax.axis('off')
+	ax.table(cellText=df_total.values, colLabels=df_total.columns, loc='center')
+
+	plt.savefig('dataTotal_eps05.pdf', format='pdf', bbox_inches='tight')
+
+	#HGTD Gauche
+	dataHGTDG = {'HGTD Gauche eps=05': ['Nombre de Cluster','Nombre BIB', 'Nombre top','Differenciation'],
+        'Total':  [HGTDG_NombreTotalTrace + HGTDG_NombreTop, HGTDG_NombreBIB, HGTDG_NombreTop, HGTDG_NombreTotalTraceTrue+HGTDG_NombreTopTrue ],
+        'True': [HGTDG_NombreTotalTraceTrue+HGTDG_NombreTopTrue,HGTDG_NombreBIBTrue , HGTDG_NombreTopTrue, HGTDG_NombreTotalTraceTrue+HGTDG_NombreTopTrue ],
+		'Pourcentage': [(100*(HGTDG_NombreTotalTraceTrue+HGTDG_NombreTopTrue))/(HGTDG_NombreTotalTrace + HGTDG_NombreTop),(100*HGTDG_NombreBIBTrue)/HGTDG_NombreBIB ,(100*HGTDG_NombreTopTrue)/HGTDG_NombreTop, 100 ]}
+	df_HGTDG = pd.DataFrame(dataHGTDG)
+
+	fig, ax = plt.subplots()
+	ax.axis('off')
+	ax.table(cellText=df_HGTDG.values, colLabels=df_HGTDG.columns, loc='center')
+
+	plt.savefig('dataHGTD_Gauche_eps05.pdf', format='pdf', bbox_inches='tight')
+
+
+	#HGTD_Droit
+	dataHGTDD = {'HGTD Droit eps=05': ['Nombre de Cluster','Nombre BIB', 'Nombre top','Differenciation'],
+        'Total':  [HGTDD_NombreTotalTrace , HGTDD_NombreBIB, HGTDD_NombreTop, HGTDD_NombreTotalTrace ],
+        'True': [HGTDD_NombreTotalTraceTrue, HGTDD_NombreBIBTrue , HGTDD_NombreTopTrue,  HGTDD_NombreTopTrue ],
+		'Pourcentage': [(100*(HGTDD_NombreTotalTraceTrue))/(HGTDD_NombreTotalTrace ),0 ,(100*HGTDD_NombreTopTrue)/HGTDD_NombreTop, ( HGTDD_NombreTopTrue*100)/HGTDD_NombreTotalTrace ]}
+	df_HGTDD = pd.DataFrame(dataHGTDD)
+
+	fig, ax = plt.subplots()
+	ax.axis('off')
+	ax.table(cellText=df_HGTDD.values, colLabels=df_HGTDD.columns, loc='center')
+
+	plt.savefig('dataHGTD_Droit_eps05.pdf', format='pdf', bbox_inches='tight')
 
 ####################################################################################
 '''Pour créer un graphe des clusters'''

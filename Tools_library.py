@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy
 import scipy.stats
+import pandas as pd
 from iminuit import Minuit
 from sklearn.datasets import make_blobs
 from sklearn.preprocessing import StandardScaler

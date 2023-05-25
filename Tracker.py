@@ -22,8 +22,8 @@ tree_HGTD = tfile_HGTD.Get("ntuples/SiHGTD")
 tfile_top = r.TFile.Open("Global_s4038_ttbar.HIT.root")
 tree_top = tfile_top.Get("ntuples/SiHGTD")
 
-x_BIB, y_BIB, z_BIB, t_BIB, R_BIB = Lbr.Lbr_ImportData(tree_HGTD) #variable x,y,z,R pour le BIB
-x_top, y_top, z_top, t_top, R_top = Lbr.Lbr_ImportData(tree_top)  #variable x,y,z,R pour le top
+x_BIB, y_BIB, z_BIB, t_BIB, R_BIB = Lbr.Lbr_ImportDataAllMixed(tree_HGTD) #variable x,y,z,R pour le BIB
+x_top, y_top, z_top, t_top, R_top = Lbr.Lbr_ImportDataAllMixed(tree_top)  #variable x,y,z,R pour le top
 
 
 x=x_BIB+x_top
@@ -32,7 +32,7 @@ z=z_BIB+z_top
 t=t_BIB+t_top
 R=R_BIB+R_top
 
-
+print(R)
 
 ####################################################################################
 #Creation de l'indexage en z des layer
@@ -80,10 +80,10 @@ A = Lbr.Lbr_MinuitFit(Cluster, Index_cluster,z,t)
 ####################################################################################
 #Compter le nb de hit
 ####################################################################################
-Lbr.Lbr_Comptage(Cluster_BIB)
-Lbr.Lbr_Comptage(Cluster_top)
+Tools.Comptage(Cluster_BIB,"BIB")
+Tools.Comptage(Cluster_top,"top")
 
-Tools.Comptage2(Cluster)
+Tools.Comptage2(Cluster,"mix")
 
 
 

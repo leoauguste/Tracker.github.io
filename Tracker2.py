@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy
 import scipy.stats
+import pandas as pd
 from iminuit import Minuit
 from sklearn.datasets import make_blobs
 from sklearn.preprocessing import StandardScaler
@@ -83,4 +84,12 @@ for i in range(len(Cluster)):
     A = Lbr.Lbr_MinuitFit(Cluster[i], Index_cluster[i], z_mix[i], t_mix[i])
     Coef.append(A)
 
-print(Coef)
+
+
+
+
+
+Lbr.Lbr_AnalyseTrace(Coef,Index_layer,BIB_true)
+
+
+
