@@ -1,0 +1,114 @@
+ls
+
+
+cp /eos/user/l/lcorpe/forLeo/BIB_EVNT/nom_du_dossier/nom_du_fichier.root    /eos/user/l/lreynaud/BIB_Sample/nom_du_dossier.pool.root.1
+
+
+cp /eos/user/l/lcorpe/forLeo/BIB_EVNT/mc15_13TeV.309681.BeamHaloGenerator_BeamHaloB1_20MeV.evgen.EVNT.e6513/EVNT.13330069._000    /eos/user/l/lreynaud/BIB_Sample/mc15_13TeV.309681.BeamHaloGenerator_BeamHaloB1_20MeV.evgen.EVNT.e6513.pool.root.1
+/eos/user/l/lcorpe/forLeo/BIB_EVNT/mc15_13TeV.309681.BeamHaloGenerator_BeamHaloB1_20MeV.evgen.EVNT.e6513/EVNT.13330069._000
+########################################################################################################################################
+
+/eos/user/l/lreynaud/BIB_Sample/mc15_13TeV.309680.BeamHaloGenerator_BeamGasB1_20MeV.evgen.EVNT.e6513/
+
+hadd -f output.root input1.root  input2.root  input3.root  ... inputN.root
+
+
+mkdir s3770
+--maxEvents '2'
+
+1111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111
+##############################################################################################################################################
+HIT
+
+
+setupATLAS
+asetup 20.20.10
+GetTfCommand.py --AMI=s3770 > run_s3770.sh
+
+find . ! -name 'run_s3770.sh' -type f -exec rm -f {} +
+rm -r XML-ATLAS-P2-ITK-23-00-03/
+vim run_s3770.sh
+
+'--athenaopts=--nprocs=2' --maxEvents '2' --jobNumber '1'
+
+--inputEVNTFile '/eos/user/l/lreynaud/BIB_Sample/mc15_13TeV.309680.BeamHaloGenerator_BeamGasB1_20MeV.evgen.EVNT.e6513/nom_fichier' --outputHITSFile '/eos/user/l/lreynaud/BIB_Sample/s3770/309680/s3770_num_fichier.HIT.root' 
+
+setupATLAS
+asetup 20.20.10
+source run_s3770.sh
+
+
+
+1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1''1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'1'
+#############################################################################################################################################
+HIT avec nouvelle géometrie s4038
+
+
+setupATLAS
+
+asetup Athena,23.0.14
+GetTfCommand.py --AMI=s4038 > run_s4038.sh
+
+find . ! -name 'run_s4038.sh' -type f -exec rm -f {} +
+rm -r XML-ATLAS-P2-ITK-23-00-03/
+vim run_s4038.sh
+
+'--athenaopts=--nprocs=2' --maxEvents '2' --jobNumber '1'
+
+--inputEVNTFile '/eos/user/l/lreynaud/BIB_Sample/mc15_13TeV.309680.BeamHaloGenerator_BeamGasB1_20MeV.evgen.EVNT.e6513/nom_fichier' --outputHITSFile '/eos/user/l/lreynaud/BIB_Sample/s4038/309680/s4038_num_fichier.HIT.root' 
+
+setupATLAS
+asetup 20.20.10
+source run_s4038.sh
+
+
+RunHitAnalysis.py -i BIB.HITS.root
+
+
+RunHitAnalysis.py -i /eos/user/l/lreynaud/V_one/ttbar/output.V_ttbar_s3770_10.HIT.root
+
+--inputEVNTFile '/eos/user/l/lreynaud/V_one/ttbar/EVNT_ttbar.32468304._002312.pool.root.1' --outputHITSFile '/eos/user/l/lreynaud/Local_bug_s4038_ttbar.HIT.root' --maxEvents '2'
+
+
+
+222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222222
+#############################################################################################################################################
+Local -> Global
+
+cp /afs/cern.ch/user/l/lcorpe/work/public/forLeo/HGTDHitAnalysis_topOptions.py
+
+setupATLAS
+asetup Athena,21.9.26
+
+find . ! -name 'HGTDHitAnalysis_topOptions.py' -type f -exec rm -f {} +
+rm -r XML-ATLAS-P2-ITK-23-00-03/
+
+# ouvre HGTDHitAnalysis_topOptions.py et modifie la ligne 15: athenaCommonFlags.FilesInput = glob( "BIB.HITS.merge.root" ) avec le nom de to fichier HITS
+
+/eos/user/l/lreynaud/BIB_Sample/s3770/309680/s3770_0000XX.HIT.root
+
+ligne 56 (output) :
+
+/eos/user/l/lreynaud/BIB_Sample/s3770/309680/Globale/Global_Hit_0000XX.HGTD.root
+
+athena  HGTDHitAnalysis_topOptions.py
+
+
+
+333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333333
+#############################################################################################################################################
+r13617
+
+
+setupATLAS
+asetup Athena,21.9.26
+
+GetTfCommand.py --AMI=r13617 > run_r13617.sh
+
+--inputHITSFile '/eos/user/l/lreynaud/BIB_Sample/s3770/309680/s3770_000003.HIT.root' --outputRDOFile '/eos/user/l/lreynaud/BIB_Sample/s3770/309680/RDO/s3770_000003.RDO.root'  --outputAODFile '/eos/user/l/lreynaud/BIB_Sample/s3770/309680/AOD/s3770_000003.AOD.root' --outputESDFile '/eos/user/l/lreynaud/BIB_Sample/s3770/309680/ESD/s3770_000003.ESD.root'
+
+setupATLAS
+source run_r13617.sh
+
+
+hadd -f output.root input1.root  input2.root  input3.root  ... inputN.root

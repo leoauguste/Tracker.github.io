@@ -1,0 +1,208 @@
+
+Tester des programmes athena de manière local
+
+
+#####################################################################################################################
+#####################################################################################################################
+Importe un repository
+
+mkdir  work/athena_sparse_checkout
+cd work/athena_sparse_checkout
+setupATLAS
+lsetup git
+git atlas init-workdir https://:@gitlab.cern.ch:8443/atlas/athena.git
+cd athena/
+git fetch upstream
+git checkout -b master-my-topic upstream/23.0 --no-track
+
+
+git atlas addpkg HitAnalysis
+git atlas addpkg GeoAdaptors
+git atlas addpkg HGTD_G4
+
+
+
+mkdir ../build && cd ../build
+asetup 23.0,latest,Athena
+cmake ../athena/Projects/WorkDir/
+source x86_64-centos7-gcc11-opt/setup.sh
+make -j8
+
+
+vi ../athena/Simulation/Tools/HitAnalysis/src/SiHitAnalysis.cxx 
+make
+RunHitAnalysis.py  -i chemin/fichier/HIT/BIB -n 10 # just 10 events, avec un ficheir HITS
+	
+	
+
+
+#####################################################################################################################
+#####################################################################################################################
+Depuis un repository pour SiHitAnalysis.cxx
+
+setupATLAS
+lsetup git
+asetup 23.0,latest,Athena
+cmake ../athena/Projects/WorkDir/
+source x86_64-centos7-gcc11-opt/setup.sh
+make -j8
+
+vi ../athena/Simulation/Tools/HitAnalysis/src/SiHitAnalysis.cxx 
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680/s4038_000003.HIT.root -n 10
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/V_one/ttbar/s4038/s4038_ttbar.HIT.root -n 10
+	
+
+
+
+
+#####################################################################################################################
+#####################################################################################################################
+
+Depuis un repository pour GeoModel
+https://gitlab.cern.ch/atlas/athena/-/blob/release/23.0.14/DetectorDescription/GeoModel/GeoAdaptors/GeoAdaptors/GeoSiHit.icc
+https://gitlab.cern.ch/atlas/athena/-/blob/release/23.0.14/Simulation/Tools/HitAnalysis/src/SiHitAnalysis.cxx#L264
+
+
+git atlas addpkg GeoAdaptors
+
+
+
+setupATLAS
+lsetup git
+asetup 23.0,latest,Athena
+cmake ../athena/Projects/WorkDir/
+source x86_64-centos7-gcc11-opt/setup.sh
+make -j8
+
+
+vi ../athena/DetectorDescription/GeoModel/GeoAdaptors/GeoAdaptors/GeoSiHit.icc
+
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680/s4038_000003.HIT.root -n 10
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/V_one/ttbar/s4038/s4038_ttbar.HIT.root -n 3
+
+
+        000003
+        000014
+        000023
+        000054 
+        000055 
+        000062
+000067
+000085
+000090
+000092
+000095
+
+
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680/s4038_000095.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680/Global/Global_s4038_000095.HIT.root
+
+
+#####################################################################################################################
+#####################################################################################################################
+
+Depuis un repository pour HGTD_G4
+https://gitlab.cern.ch/atlas/athena/-/blob/master/HighGranularityTimingDetector/HGTD_G4/HGTD_G4_SD/src/HGTDSensorGmxSD.cxx#L83-L89
+
+
+
+
+git atlas addpkg HGTD_G4
+
+
+setupATLAS
+lsetup git
+asetup 23.0,latest,Athena
+cmake ../athena/Projects/WorkDir/
+source x86_64-centos7-gcc11-opt/setup.sh
+make -j8
+
+vi ../athena/HighGranularityTimingDetector/HGTD_G4/HGTD_G4_SD/src/HGTDSensorGmxSD.cxx
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/V_one/ttbar/s4038/s4038_ttbar.HIT.root -n 2
+
+
+
+
+
+
+hadd -f output.root input1.root  input2.root  input3.root  ... inputN.root
+
+
+
+hadd -f /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_BeamGas_20MeV.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000003.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000014.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000023.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000054.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000055.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000062.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000067.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000067.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000085.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000090.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000092.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global/Global_s4038_000095.HIT.root
+
+
+
+
+
+
+
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000021.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000021.HIT.root
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000057.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000057.HIT.root
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000060.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000060.HIT.root
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000062.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000062.HIT.root
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000074.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000074.HIT.root
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000096.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000096.HIT.root
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000100.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000100.HIT.root
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000121.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000121.HIT.root
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000135.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000135.HIT.root
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000152.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000152.HIT.root
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000173.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000173.HIT.root
+
+
+
+
+
+###########################################################################################################################
+Local -> Global
+
+mkdir  work/athena_sparse_checkout_3
+cd work/athena_sparse_checkout_3
+setupATLAS
+lsetup git
+git atlas init-workdir https://:@gitlab.cern.ch:8443/atlas/athena.git
+cd athena/
+git fetch upstream
+git checkout -b master-my-topic upstream/23.0 --no-track
+git atlas addpkg HitAnalysis GeoAdaptors
+mkdir ../build && cd ../build
+asetup 23.0,latest,Athena
+cmake ../athena/Projects/WorkDir/
+source x86_64-centos7-gcc11-opt/setup.sh
+make -j8
+vi ../athena/Simulation/Tools/HitAnalysis/src/SiHitAnalysis.cxx
+vi ../athena/DetectorDescription/GeoModel/GeoAdaptors/GeoAdaptors/GeoSiHit.icc
+vi ../athena/DetectorDescription/GeoModel/GeoAdaptors/GeoAdaptors/GeoSiHit.h
+make -j8
+RunHitAnalysis.py  -i ~/work/BIB-recon/BIB.HITS.root
+
+
+ 
+RunHitAnalysis.py -i /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/s4038_000173.HIT.root  #Endroit ou on prend le fichier Hit
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309681_BeamHalo_20MeV/Global/Global_s4038_000173.HIT.root #Pour recup le fichier Hit global
+
+#Si on a déjà tout les dossier.
+setupATLAS
+lsetup git
+asetup 23.0,latest,Athena
+cmake ../athena/Projects/WorkDir/
+source x86_64-centos7-gcc11-opt/setup.sh
+make -j8
+
+RunHitAnalysis.py -i /eos/user/l/lreynaud/V_one/ttbar/s4038/s4038_ttbar.HIT.root
+
+cp SiHitAnalysis.root /eos/user/l/lreynaud/V_one/ttbar/s4038/Global_s4038_ttbar.HIT.root
