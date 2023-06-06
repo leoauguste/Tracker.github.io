@@ -9,6 +9,7 @@ from sklearn.datasets import make_blobs
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import DBSCAN
 from sklearn import metrics
+from tqdm import tqdm
 r.gStyle.SetOptStat(0)
 
 import Tools_library as Tools
@@ -40,10 +41,9 @@ eliminant les hit isole et les bug  '''
 
 
 #2745 2747
-def Lbr_ImportData(NomTree):
+def Lbr_ImportDataBIB(NomTree):
 	x,y,z,t=[],[],[],[]
 	x2,y2,z2,t2=[],[],[],[]
-	x3,y3,z3,t3=[],[],[],[]
 	
 	R=[]
 
@@ -61,14 +61,51 @@ def Lbr_ImportData(NomTree):
 				x4.append(x1[i])
 				z4.append(z1[i])
 				t4.append(t1[i])
-		if len(x4)>2:
+		if len(x4)>2 and len(x4)<700: #Il y a des evenement top glisser dans mes samples BIB, ou du moins des evenement cheloux. je les supprime comme ça
 			y.append(y4)
 			x.append(x4)
 			z.append(z4)
 			t.append(t4)		
 
+	for j in range(len(x)):
+		X1=[]
+		
+		for i in range(len(x[j])):
+			X=[]
+			X.append(x[j][i])
+			X.append(y[j][i])
+			X.append(t[j][i])
+			X1.append(X)
+		R.append(X1)
 
+	return x,y,z,t,R
 
+##########################################################""
+def Lbr_ImportDataTop(NomTree):
+	x,y,z,t=[],[],[],[]
+	x2,y2,z2,t2=[],[],[],[]
+	
+	R=[]
+
+	for event in NomTree:
+		x2.append(list(event.HGTD_x))
+		y2.append(list(event.HGTD_y))
+		z2.append(list(event.HGTD_z))
+		t2.append(list(event.HGTD_time))
+#pour enlever les event avec 1 hit et parce que certain hit sont en double ce qui fait bug le clustering
+	for x1,y1,z1,t1 in zip(x2,y2,z2,t2):
+		x4,y4,z4,t4=[],[],[],[]
+		for i in range(len(x1)):
+			if x1[i] not in x4 :
+				y4.append(y1[i])
+				x4.append(x1[i])
+				z4.append(z1[i])
+				t4.append(t1[i])
+		if len(x4)>2 : 
+			y.append(y4)
+			x.append(x4)
+			z.append(z4)
+			t.append(t4)		
 
 	for j in range(len(x)):
 		X1=[]
@@ -84,11 +121,10 @@ def Lbr_ImportData(NomTree):
 	return x,y,z,t,R
 
 
-
 ####################################################################################
 '''LDL Mélanger event par event le BIB et le top, sachant que plusieurs
-event BIB iront dans chaque event top (10 event top pour 1380 event BIB) 
-donc on rassemle d'abord tout les event BIB en 10 event'''
+event BIB iront dans chaque event top (400 event top pour 1380 event BIB) 
+donc on rassemle d'abord tout les event BIB en 400 event'''
 ####################################################################################
 def Lbr_Melange(x_BIB, y_BIB, z_BIB, t_BIB, R_BIB,x_top, y_top, z_top, t_top, R_top, TrueBIB, Truetop):
 		x_mix=[[] for i in range(len(z_top))]
@@ -97,80 +133,15 @@ def Lbr_Melange(x_BIB, y_BIB, z_BIB, t_BIB, R_BIB,x_top, y_top, z_top, t_top, R_
 		t_mix=[[] for i in range(len(z_top))]
 		R_mix=[[] for i in range(len(z_top))]
 		BIBorTOP_mix=[[] for i in range(len(z_top))]
-		a=0
 		for i in range(len(x_BIB)):
-			if a==0:
-				x_mix[0].extend(x_BIB[i])
-				y_mix[0].extend(y_BIB[i])
-				z_mix[0].extend(z_BIB[i])
-				t_mix[0].extend(t_BIB[i])
-				R_mix[0].extend(R_BIB[i])
-				BIBorTOP_mix[0].extend(TrueBIB[i])
-			if a==1:
-				x_mix[1].extend(x_BIB[i])
-				y_mix[1].extend(y_BIB[i])
-				z_mix[1].extend(z_BIB[i])
-				t_mix[1].extend(t_BIB[i])
-				R_mix[1].extend(R_BIB[i])
-				BIBorTOP_mix[1].extend(TrueBIB[i])
-			if a==2:
-				x_mix[2].extend(x_BIB[i])
-				y_mix[2].extend(y_BIB[i])
-				z_mix[2].extend(z_BIB[i])
-				t_mix[2].extend(t_BIB[i])
-				R_mix[2].extend(R_BIB[i])
-				BIBorTOP_mix[2].extend(TrueBIB[i])
-			if a==3:
-				x_mix[3].extend(x_BIB[i])
-				y_mix[3].extend(y_BIB[i])
-				z_mix[3].extend(z_BIB[i])
-				t_mix[3].extend(t_BIB[i])
-				R_mix[3].extend(R_BIB[i])
-				BIBorTOP_mix[3].extend(TrueBIB[i])
-			if a==4:
-				x_mix[4].extend(x_BIB[i])
-				y_mix[4].extend(y_BIB[i])
-				z_mix[4].extend(z_BIB[i])
-				t_mix[4].extend(t_BIB[i])
-				R_mix[4].extend(R_BIB[i])
-				BIBorTOP_mix[4].extend(TrueBIB[i])
-			if a==5:
-				x_mix[5].extend(x_BIB[i])
-				y_mix[5].extend(y_BIB[i])
-				z_mix[5].extend(z_BIB[i])
-				t_mix[5].extend(t_BIB[i])
-				R_mix[5].extend(R_BIB[i])
-				BIBorTOP_mix[5].extend(TrueBIB[i])
-			if a==6:
-				x_mix[6].extend(x_BIB[i])
-				y_mix[6].extend(y_BIB[i])
-				z_mix[6].extend(z_BIB[i])
-				t_mix[6].extend(t_BIB[i])
-				R_mix[6].extend(R_BIB[i])
-				BIBorTOP_mix[6].extend(TrueBIB[i])
-			if a==7:
-				x_mix[7].extend(x_BIB[i])
-				y_mix[7].extend(y_BIB[i])
-				z_mix[7].extend(z_BIB[i])
-				t_mix[7].extend(t_BIB[i])
-				R_mix[7].extend(R_BIB[i])
-				BIBorTOP_mix[7].extend(TrueBIB[i])
-			if a==8:
-				x_mix[8].extend(x_BIB[i])
-				y_mix[8].extend(y_BIB[i])
-				z_mix[8].extend(z_BIB[i])
-				t_mix[8].extend(t_BIB[i])
-				R_mix[8].extend(R_BIB[i])
-				BIBorTOP_mix[8].extend(TrueBIB[i])
-			if a==9:
-				x_mix[9].extend(x_BIB[i])
-				y_mix[9].extend(y_BIB[i])
-				z_mix[9].extend(z_BIB[i])
-				t_mix[9].extend(t_BIB[i])
-				R_mix[9].extend(R_BIB[i])
-				BIBorTOP_mix[9].extend(TrueBIB[i])
-				a=-1
-			a+=1
+			index = i % len(x_mix)
+			x_mix[index].extend(x_BIB[i])
+			y_mix[index].extend(y_BIB[i])
+			z_mix[index].extend(z_BIB[i])
+			t_mix[index].extend(t_BIB[i])
+			R_mix[index].extend(R_BIB[i])
+			BIBorTOP_mix[index].extend(TrueBIB[i])
+
 		for i in range(len(x_top)):
 			x_mix[i].extend(x_top[i])
 			y_mix[i].extend(y_top[i])
@@ -179,7 +150,6 @@ def Lbr_Melange(x_BIB, y_BIB, z_BIB, t_BIB, R_BIB,x_top, y_top, z_top, t_top, R_
 			R_mix[i].extend(R_top[i])
 			BIBorTOP_mix[i].extend(Truetop[i])
 		return x_mix, y_mix, z_mix, t_mix, R_mix, BIBorTOP_mix
-
 
 ####################################################################################
 '''On mélange le BIB et le top mais en gardant chaque event séparé.'''
@@ -196,8 +166,8 @@ def Lbr_Melange2(x_BIB, y_BIB, z_BIB, t_BIB, R_BIB,x_top, y_top, z_top, t_top, R
 	return x_mix, y_mix, z_mix, t_mix, R_mix, BIBorTOP_mix
 
 ####################################################################################
-'''LDL: Creation de l'indexage des layers pour une liste de liste 
-pour HGTD droit (z negatif) du PI -> exterieur: 3 2 1 0
+'''LDL: Creation de l'indexage des layers pour une liste de liste -4 -3 -2 -1 0 1 2 3
+pour HGTD droit (z negatif) du PI -> exterieur: 0 1 2 3
 pour HGTD gauche (z positif) du PI -> exterieur: -1 -2 -3 -4  '''
 ####################################################################################
 def Lbr_IndexLayerZLDL(VarZ):
@@ -294,24 +264,24 @@ Creation de l'indexage pour passer d'un hit dans un cluster a un hit de notre  l
 Tout les indexe on la meme forme  -> index_layer[i][j] -> Index_cluster[i][j]  -> Cluster[i][j]'''
 ####################################################################################
 
-def Lbr_Clustering( R_mix,index1,VarT,VarZ,BIB):
+def Lbr_Clustering(parametre, R_mix,index1,VarT,VarZ,BIB):
     labelsi, n_clustersi, n_noisei = [], [], []
     Cluster, Index_cluster, Index_layer, t_index, z_index, BIB_True = [], [], [], [], [], []
-    for i in range(len(R_mix)):
+    print(len(R_mix))
+    for i in tqdm(range(len(R_mix))):
         R1=R_mix[i]
         R1 = StandardScaler().fit_transform(R1)  #on standardise pour utiliser dbscan
         x=[row[0] for row in R1]
         y=[row[1] for row in R1]
         t=[row[2] for row in R1]
         plt.scatter(x, y, t) #Les 3 colone x,y,t qui nous serviront pour faire les cluster
-        db = DBSCAN(eps=0.005, min_samples=2).fit(R1) #esp= distance entre chaque hit, min_samples -> nombre minimum de hit pour faire un cluster 
+        db = DBSCAN(eps=parametre, min_samples=MaxHit).fit(R1) #esp= distance entre chaque hit, min_samples -> nombre minimum de hit pour faire un cluster 
         labels = db.labels_  #etiquettes les hit dans les clusers -> labels[i] contient l'etiquette du i-eme point de donnees. 
         n_clusters = len(set(labels)) - (1 if -1 in labels else 0) #compte le nombre de cluster
         n_noise = list(labels).count(-1) #compte le nombre de point sans cluster
         labelsi.append(labels)
         n_clustersi.append(n_clusters)
         n_noisei.append(n_noise)		
-
 	#Indexage des cluster
         Cluster1, Index_cluster1, Index_layer1, t_index1, z_index1, BIB_true = [], [], [], [], [], []
         for b in range(n_clusters):
@@ -324,7 +294,6 @@ def Lbr_Clustering( R_mix,index1,VarT,VarZ,BIB):
             Index_cluster1.append(M)
         Cluster.append(Cluster1)
         Index_cluster.append(Index_cluster1)
-
     #Indexage des layers en z
         for k in range(len(Cluster1)):	
             T,K,B,Z = [], [], [], []
@@ -344,7 +313,7 @@ def Lbr_Clustering( R_mix,index1,VarT,VarZ,BIB):
         t_index.append(t_index1)
         z_index.append(z_index1)
         BIB_True.append(BIB_true)
-
+        del Index_layer1,t_index1, z_index1, BIB_true
     return labelsi, n_clustersi, n_noisei, Cluster, Index_cluster, Index_layer, t_index, z_index, BIB_True
 
 
@@ -365,7 +334,7 @@ def Lbr_CleanCluster(Cluster1,Index_cluster1,Index_layer1,t_index1,z_index1,BIB_
         for i in range(len(Cluster1[f])): #on se place dans l'event f
             clus, ind_clu, ind_lay, t_ind, z_ind, BIB = [], [], [], [], [], [] 
             for j in range(len(Cluster1[f][i])): #On se place dans les cluster de l'event f
-                if Index_layer1[f][i][j] not in ind_lay: #On regarde hit par hit si il y a pas plusieurs hit sur la même layer
+                if Index_layer1[f][i][j] not in ind_lay: #On regarde hit par hit si il y a pas plusieurs hit sur le même layer, methode a revoir
                     clus.append(Cluster1[f][i][j])
                     ind_clu.append(Index_cluster1[f][i][j])
                     ind_lay.append(Index_layer1[f][i][j])
@@ -380,7 +349,7 @@ def Lbr_CleanCluster(Cluster1,Index_cluster1,Index_layer1,t_index1,z_index1,BIB_
                 z_index2.append(z_ind)
                 BIB_true2.append(BIB)
         for i in range(len(Index_layer2)): 
-            if  ( Tools.croissante(Index_layer2[i]) or Tools.decroissante(Index_layer2[i]) ) and ( Tools.croissante(t_index2[i]) or Tools.decroissante(t_index2[i]) ): #on regarde si ça a du sens physiquement
+            if  ( Tools.croissante(Index_layer2[i]) or Tools.decroissante(Index_layer2[i]) ) and ( Tools.croissante(t_index2[i]) or Tools.decroissante(t_index2[i]) ) and (Tools.positif(Index_layer2[i]) or Tools.negatif(Index_layer2[i]) ): #on regarde si ça a du sens physiquement
                 Cluster.append(Cluster2[i])
                 Index_cluster.append(Index_cluster2[i])	
                 Index_layer.append(Index_layer2[i])
@@ -413,8 +382,37 @@ def Lbr_BIB_Top(BIB_true3):
 	print("Le nombre de cluster bon est:",a)
 
 
+####################################################################################
+'''Création graph avec root'''
+####################################################################################
 
+def Lbr_Graph(VarAbs, VarOrd, AbsTitre, OrdTitre, Titre ):
+	canvas = r.TCanvas("canvas", Titre, 1200, 600)
+	graph = r.TGraph(len(VarAbs), np.array(VarAbs), np.array(VarOrd))
+	graph.SetLineColor(r.kMagenta+2)
+	graph.SetLineWidth(2)
+	graph.GetXaxis().SetTitle(AbsTitre)
+	graph.GetYaxis().SetTitle(OrdTitre)
 
+	canvas.SetLeftMargin(0.15)
+	canvas.SetRightMargin(0.05)
+	canvas.SetTopMargin(0.05)
+	canvas.SetBottomMargin(0.15)
+	canvas.Update()
+
+	graph.Draw()
+	r.gPad.SetLogx()
+
+	legend = r.TLegend(0.25, 0.65, 0.35, 0.85)
+	legend.SetBorderSize(0)
+	legend.SetTextSize(0.03)
+	legend.SetFillColor(0)
+	legend.AddEntry(graph,'Eff', "l")
+	legend.Draw()
+
+	canvas.Draw()
+	canvas.Show()
+	canvas.SaveAs("Efficiency.pdf")
 
 ####################################################################################
 '''Creation d'un fit sur les trajectoire avec minuit'''
@@ -456,159 +454,125 @@ def Lbr_MinuitFit(Cluster, Index_cluster, VarZ, VarT):
 
 
 
-####################################################################################
-'''On regarde les traces qui sont valide'''
-####################################################################################
-def Lbr_AnalyseTrace(Coef,Index_layer,BIB_true):
-	NombreTotalTrace=0
-	NombreTotalTraceTrue=0
-	#HGTD gauche -> HGTDG
-	HGTDG_NombreTotalTrace=0
-	HGTDG_NombreTotalTraceTrue=0
-	HGTDG_NombreBIB=0
-	HGTDG_NombreBIBTrue=0
-	HGTDG_NombreTop=0
-	HGTDG_NombreTopTrue=0
-	#HGTD Droit -> HGTDD
-	HGTDD_NombreTotalTrace=0
-	HGTDD_NombreTotalTraceTrue=0
-	HGTDD_NombreBIB=0
-	HGTDD_NombreBIBTrue=0
-	HGTDD_NombreTop=0
-	HGTDD_NombreTopTrue=0
 
+####################################################################################
+'''On regarde les traces qui sont valide pour different coef de clustering
+Utiliser les indices T et B pour y comprendre quelque chose. 
+D pour HGTD Droit, G pour HGTD Gauche.
+Le BIB va de Gauche a droite dans nos samples
++----------------------+-------------+
+| 				 HGTD       	   |
++----------------------+-------------+
+|  Sample     |  BIB  |   Top      |
++----------------------+-------------+
+|  a > 0      |   B1  |   T1       |
++----------------------+-------------+
+|  a < 0      |   B2  |   T2       |
++----------------------+-------------+
+|  nan        |   B3  |   T3       |
++----------------------+-------------+
+|  total      |   B4  |   T4       |
++----------------------+-------------+ '''
+####################################################################################
+
+def Lbr_AnalyseTrace3(Coef, Index_layer, BIB_true):
+	#HGTD gauche -> HGTD_G
+	G_B1 = 0
+	G_B2 = 0
+	G_B3 = 0
+	G_T1 = 0 
+	G_T2 = 0
+	G_T3 = 0
+
+	#HGTD Droit -> HGTD_D
+	D_B1 = 0
+	D_B2 = 0
+	D_B3 = 0
+	D_T1 = 0
+	D_T2 = 0
+	D_T3 = 0
 
 	for i in range(len(Coef)):
 		if len(Coef[i]) > 0:
 			for j in range(len(Coef[i])):
-				NombreTotalTrace += 1
-				if Coef[i][j] > 0: #top
-					HGTDG_NombreTop += 1 
-					if Tools.negatif(Index_layer[i][j]) and Tools.OneTop(BIB_true[i][j]):
-						HGTDG_NombreTopTrue += 1
-						NombreTotalTraceTrue += 1
-				if Coef[i][j] < 0:
-					if Tools.negatif(Index_layer[i][j]):
-						HGTDG_NombreBIB += 1
-						HGTDG_NombreTotalTrace += 1
-						if Tools.ZeroBIB(BIB_true[i][j]):
-							HGTDG_NombreBIBTrue += 1 
-							NombreTotalTraceTrue += 1
-							HGTDG_NombreTotalTraceTrue += 1
-					if Tools.positif(Index_layer[i][j]):
-						HGTDD_NombreTotalTrace += 1
-						HGTDD_NombreTop += 1
-						if Tools.ZeroBIB(BIB_true[i][j]):
-							HGTDD_NombreTotalTraceTrue += 1
-							NombreTotalTraceTrue += 1
-							HGTDD_NombreBIBTrue += 1
-						if Tools.OneTop(BIB_true[i][j]):
-							HGTDD_NombreTotalTraceTrue += 1
-							NombreTotalTraceTrue += 1
-							HGTDD_NombreTopTrue += 1
-
-	#Total
-	dataTotal = {'eps=05': ['Nombre de Cluster'],
-        'Total':  [NombreTotalTrace],
-        'True': [NombreTotalTraceTrue],
-		'Pourcentage': [(100*NombreTotalTraceTrue)/NombreTotalTrace]}
-	df_total = pd.DataFrame(dataTotal)
-
-	fig, ax = plt.subplots()
-	ax.axis('off')
-	ax.table(cellText=df_total.values, colLabels=df_total.columns, loc='center')
-
-	plt.savefig('BB_dataTotal_eps05.pdf', format='pdf', bbox_inches='tight')
-
-	#HGTD Gauche
-	dataHGTDG = {'HGTD Gauche eps=05': ['Nombre de Cluster','Nombre BIB', 'Nombre top','Differenciation'],
-        'Total':  [HGTDG_NombreTotalTrace + HGTDG_NombreTop, HGTDG_NombreBIB, HGTDG_NombreTop, HGTDG_NombreTotalTraceTrue+HGTDG_NombreTopTrue ],
-        'True': [HGTDG_NombreTotalTraceTrue+HGTDG_NombreTopTrue,HGTDG_NombreBIBTrue , HGTDG_NombreTopTrue, HGTDG_NombreTotalTraceTrue+HGTDG_NombreTopTrue ],
-		'Pourcentage': [(100*(HGTDG_NombreTotalTraceTrue+HGTDG_NombreTopTrue))/(HGTDG_NombreTotalTrace + HGTDG_NombreTop),(100*HGTDG_NombreBIBTrue)/HGTDG_NombreBIB ,(100*HGTDG_NombreTopTrue)/HGTDG_NombreTop, 100 ]}
-	df_HGTDG = pd.DataFrame(dataHGTDG)
-
-	fig, ax = plt.subplots()
-	ax.axis('off')
-	ax.table(cellText=df_HGTDG.values, colLabels=df_HGTDG.columns, loc='center')
-
-	plt.savefig('BB_dataHGTD_Gauche_eps05.pdf', format='pdf', bbox_inches='tight')
+		####################  HGTD GAUCHE  ###########################################
+				if Tools.negatif(Index_layer[i][j]): #HGTD gauche
+					if Coef[i][j] > 0:  #event qu'on assimile a du top
+						if Tools.OneTop(BIB_true[i][j]): #assumption correct, top est bien top
+							if Coef[i][j] < 0.004 and Coef[i][j] > 0.003: #On regarde si la valeur diverge pas, sinon on envoie dans nan
+								G_T1 += 1
+							else: 
+								G_T3 += 1
+						if Tools.ZeroBIB(BIB_true[i][j]): #BIB qu'on pense être du top
+							if Coef[i][j] < 0.004 and Coef[i][j] > 0.003:
+								G_B1 += 1
+							else:
+								G_B3 += 1
+					if Coef[i][j] < 0: # event qu'on assimile a du BIB
+						if Tools.ZeroBIB(BIB_true[i][j]): #assumption correct, BIB est bien BIB
+							if Coef[i][j] > -0.004 and Coef[i][j] < -0.003: 
+								G_B2 += 1 
+							else:
+								G_B3 +=1
+						if Tools.OneTop(BIB_true[i][j]): # top qu'on pense être du BIB
+							if Coef[i][j] > -0.004 and Coef[i][j] < -0.003: 
+								G_T2 += 1
+							else: 
+								G_T3 += 1
+		####################  HGTD DROIT  ############################################
+				if Tools.positif(Index_layer[i][j]): #HGTD droit
+					if Coef[i][j] < 0: #event qu'on assimile a du top
+						if Tools.OneTop(BIB_true[i][j]): #assumption correct, top est bien top
+							if Coef[i][j] > -0.004 and Coef[i][j] < -0.003: 
+								D_T2 += 1
+							else: 
+								D_T3 += 1
+						if Tools.ZeroBIB(BIB_true[i][j]): #BIB qu'on pense être du top
+							if Coef[i][j] > -0.004 and Coef[i][j] < -0.003: 
+								D_B2 += 1
+							else: 
+								D_B3 += 1
+					if Coef[i][j] > 0: # event qu'on assimile a du BIB
+						if Tools.ZeroBIB(BIB_true[i][j]): #assumption correct, BIB est bien BIB
+							if Coef[i][j] < 0.004 and Coef[i][j] > 0.003:
+								D_B1 += 1
+							else: 
+								D_B3 += 1
+						if Tools.OneTop(BIB_true[i][j]): # top qu'on pense être du BIB
+							if Coef[i][j] < 0.004 and Coef[i][j] > 0.003:
+								D_T1 += 1
+							else:
+								D_T1 += 1
 
 
-	#HGTD_Droit
-	dataHGTDD = {'HGTD Droit eps=05': ['Nombre de Cluster','Nombre BIB', 'Nombre top','Differenciation'],
-        'Total':  [HGTDD_NombreTotalTrace , HGTDD_NombreBIB, HGTDD_NombreTop, HGTDD_NombreTotalTrace ],
-        'True': [HGTDD_NombreTotalTraceTrue, HGTDD_NombreBIBTrue , HGTDD_NombreTopTrue,  HGTDD_NombreTopTrue ],
-		'Pourcentage': [(100*(HGTDD_NombreTotalTraceTrue))/(HGTDD_NombreTotalTrace ),0 ,(100*HGTDD_NombreTopTrue)/HGTDD_NombreTop, ( HGTDD_NombreTopTrue*100)/HGTDD_NombreTotalTrace ]}
-	df_HGTDD = pd.DataFrame(dataHGTDD)
 
-	fig, ax = plt.subplots()
-	ax.axis('off')
-	ax.table(cellText=df_HGTDD.values, colLabels=df_HGTDD.columns, loc='center')
+	G_B4 = G_B1 +  G_B2 + G_B3
+	G_T4 = G_T1 + G_T2  + G_T3
 
-	plt.savefig('BB_dataHGTD_Droit_eps05.pdf', format='pdf', bbox_inches='tight')
+	D_B4 = D_B1 +  D_B2 +  D_B3
+	D_T4 = D_T1 + D_T2 + D_B4
 
+	G_TruePositif = 100 * (G_B2/G_B4) 
+	G_FalsePositif = 100 * (G_T2/G_T4)
+	G_TrueNegative = 100 *(G_B1/G_B4)
+	G_FalseNegative =100 * (G_T1/G_T4)
 
-####################################################################################
-'''On regarde les traces qui sont valide pour different coef de clustering'''
-####################################################################################
-def Lbr_AnalyseTrace2(Coef, Index_layer, BIB_true):
-	NombreTotalTrace=0
-	NombreTotalTraceTrue=0
-	#HGTD gauche -> HGTDG
-	HGTDG_NombreTotalTrace=0
-	HGTDG_NombreTotalTraceTrue=0
-	HGTDG_NombreBIB=0
-	HGTDG_NombreBIBTrue=0
-	HGTDG_NombreTop=0
-	HGTDG_NombreTopTrue=0
-	#HGTD Droit -> HGTDD
-	HGTDD_NombreTotalTrace=0
-	HGTDD_NombreTotalTraceTrue=0
-	HGTDD_NombreBIB=0
-	HGTDD_NombreBIBTrue=0
-	HGTDD_NombreTop=0
-	HGTDD_NombreTopTrue=0
+	D_TruePositif = 100 * (D_B1/D_B4) 
+	D_FalsePositif = 100 * (D_T1/D_T4)
+	D_TrueNegative = 100 *(D_B2/D_B4)
+	D_FalseNegative =100 * (D_T2/D_T4)
+	return	 G_B1, G_B2, G_B3, G_B4, G_T1, G_T2, G_T3, G_T4, G_TruePositif, G_FalsePositif, G_TrueNegative, G_FalseNegative, \
+		     D_B1, D_B2, D_B3, D_B4, D_T1, D_T2, D_T3, D_T4,  D_TruePositif, D_FalsePositif, D_TrueNegative, D_FalseNegative
 
-
-	for i in range(len(Coef)):
-		if len(Coef[i]) > 0:
-			for j in range(len(Coef[i])):
-				NombreTotalTrace += 1
-				if Coef[i][j] > 0: #top
-					HGTDG_NombreTop += 1 
-					if Tools.negatif(Index_layer[i][j]) and Tools.OneTop(BIB_true[i][j]):
-						HGTDG_NombreTopTrue += 1
-						NombreTotalTraceTrue += 1
-				if Coef[i][j] < 0:
-					if Tools.negatif(Index_layer[i][j]):
-						HGTDG_NombreBIB += 1
-						HGTDG_NombreTotalTrace += 1
-						if Tools.ZeroBIB(BIB_true[i][j]):
-							HGTDG_NombreBIBTrue += 1 
-							NombreTotalTraceTrue += 1
-							HGTDG_NombreTotalTraceTrue += 1
-					if Tools.positif(Index_layer[i][j]):
-						HGTDD_NombreTotalTrace += 1
-						HGTDD_NombreTop += 1
-						if Tools.ZeroBIB(BIB_true[i][j]):
-							HGTDD_NombreTotalTraceTrue += 1
-							NombreTotalTraceTrue += 1
-							HGTDD_NombreBIBTrue += 1
-						if Tools.OneTop(BIB_true[i][j]):
-							HGTDD_NombreTotalTraceTrue += 1
-							NombreTotalTraceTrue += 1
-							HGTDD_NombreTopTrue += 1
-	pourcentage=((100*NombreTotalTraceTrue)/NombreTotalTrace)
-	return NombreTotalTrace, NombreTotalTraceTrue, pourcentage
 
 ####################################################################################
 '''Pour créer un graphe des clusters'''
 ####################################################################################
 def Lbr_GraphCluster(R):	
 	R = StandardScaler().fit_transform(R)
-	db = DBSCAN(eps=0.02, min_samples=3).fit(R)
+
 	plt.scatter(R[:, 0], R[:, 1], R[:, 2]) 
-	db = DBSCAN(eps=0.008, min_samples=3).fit(R) 
+	db = DBSCAN(eps=0.05, min_samples=2).fit(R) 
 	labels = db.labels_  
 	n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
 	n_noise = list(labels).count(-1) 
