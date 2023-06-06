@@ -1,0 +1,89 @@
+###################################################################
+Simulation s4038
+###################################################################
+
+
+mkdir s4038; cd s4038
+setupATLAS
+asetup Athena,23.0.14
+GetTfCommand.py --AMI=s4038 > run_s4038.sh
+vim run_s4038.sh
+
+
+
+--inputEVNTFile '/chemin/fichierEVNT/nomfichier.root' 
+--outputHITSFile '/chemin/nouveaufichierHIT/nomfichier.HIT.root'
+
+
+setupATLAS
+source run_s4038.sh
+
+
+###################################################################
+Transformation local global
+###################################################################
+
+mkdir  work/athena_sparse_checkout_3
+cd work/athena_sparse_checkout_3
+setupATLAS
+lsetup git
+git atlas init-workdir https://:@gitlab.cern.ch:8443/atlas/athena.git
+cd athena/
+git fetch upstream
+git checkout -b master-my-topic upstream/23.0 --no-track
+git atlas addpkg HitAnalysis GeoAdaptors
+mkdir ../build && cd ../build
+asetup 23.0,latest,Athena
+cmake ../athena/Projects/WorkDir/
+source x86_64-centos7-gcc11-opt/setup.sh
+make -j8
+
+
+vi ../athena/DetectorDescription/GeoModel/GeoAdaptors/GeoAdaptors/GeoSiHit.icc
+
+
+
+setupATLAS
+lsetup git
+asetup 23.0,latest,Athena
+cmake ../athena/Projects/WorkDir/
+source x86_64-centos7-gcc11-opt/setup.sh
+make -j8
+
+
+
+RunHitAnalysis.py  -i /chemin/du/fichier/nomfichier.HIT.root
+
+
+
+
+###################################################################
+Texte a remplacer dans le fichier GeoSiHit.icc
+###################################################################
+
+
+    if (geoelement) {
+      if(m_hit->isHGTD()){
+        const HepGeom::Point3D<double> localHit = m_hit->localStartPosition();
+        HepGeom::Point3D<double> flippedHit;
+        flippedHit[0]=localHit.y();
+        flippedHit[1]=localHit.z();
+        flippedHit[2]=localHit.x();
+        const HepGeom::Point3D<double> globalStartPos = Amg::EigenTransformToCLHEP(geoelement->transformHit()) * (flippedHit);
+        double x=globalStartPos.x();
+        double y=globalStartPos.y();
+        double z=globalStartPos.z();
+        return HepGeom::Point3D<double>(x,y,z);
+      }else{
+      const HepGeom::Point3D<double> globalStartPos = Amg::EigenTransformToCLHEP(geoelement->transformHit()) * HepGeom::Point3D<double>(m_hit->localStartPosition());
+  
+      double x=globalStartPos.x();
+      double y=globalStartPos.y();
+      double z=globalStartPos.z();
+      return HepGeom::Point3D<double>(x,y,z);
+      }
+    }
+    
+    
+    
+
