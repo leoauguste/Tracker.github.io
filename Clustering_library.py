@@ -264,10 +264,11 @@ Creation de l'indexage pour passer d'un hit dans un cluster a un hit de notre  l
 Tout les indexe on la meme forme  -> index_layer[i][j] -> Index_cluster[i][j]  -> Cluster[i][j]'''
 ####################################################################################
 
-def Lbr_Clustering(parametre, R_mix,index1,VarT,VarZ,BIB):
+def Lbr_Clustering(parametre,MaxHit, R_mix,index1,VarT,VarZ,BIB):
     labelsi, n_clustersi, n_noisei = [], [], []
     Cluster, Index_cluster, Index_layer, t_index, z_index, BIB_True = [], [], [], [], [], []
     print(len(R_mix))
+    print("OUIIIIIIIIIIIIIII")
     for i in tqdm(range(len(R_mix))):
         R1=R_mix[i]
         R1 = StandardScaler().fit_transform(R1)  #on standardise pour utiliser dbscan
@@ -294,12 +295,11 @@ def Lbr_Clustering(parametre, R_mix,index1,VarT,VarZ,BIB):
             Index_cluster1.append(M)
         Cluster.append(Cluster1)
         Index_cluster.append(Index_cluster1)
-    #Indexage des layers en z
+    #Indexage des layers en z, t ...
         for k in range(len(Cluster1)):	
             T,K,B,Z = [], [], [], []
             for l in range(len(Cluster1[k])):
                 a=Index_cluster1[k][l]
-                #print(a)  
                 a=int(a)
                 K.append(index1[i][a])
                 T.append(VarT[i][a])
@@ -313,7 +313,7 @@ def Lbr_Clustering(parametre, R_mix,index1,VarT,VarZ,BIB):
         t_index.append(t_index1)
         z_index.append(z_index1)
         BIB_True.append(BIB_true)
-        del Index_layer1,t_index1, z_index1, BIB_true
+
     return labelsi, n_clustersi, n_noisei, Cluster, Index_cluster, Index_layer, t_index, z_index, BIB_True
 
 
@@ -325,6 +325,9 @@ physique
 Cluster1=[[[],[],[]...],...] =Liste_Cluster -> 10 event -> cluster dans event -> hit dans cluster
 '''
 ####################################################################################
+
+def Valid_cluster(ind_lay, t_ind):
+    return (Tools.croissante(ind_lay) or Tools.decroissante(ind_lay)) and (Tools.croissante(t_ind) or Tools.decroissante(t_ind)) and (Tools.positif(ind_lay) or Tools.negatif(ind_lay))
 
 def Lbr_CleanCluster(Cluster1,Index_cluster1,Index_layer1,t_index1,z_index1,BIB_t):
     Cluster3, Index_cluster3, Index_layer3, t_index3, z_index3, BIB_true3=[], [], [], [], [], []
@@ -349,7 +352,8 @@ def Lbr_CleanCluster(Cluster1,Index_cluster1,Index_layer1,t_index1,z_index1,BIB_
                 z_index2.append(z_ind)
                 BIB_true2.append(BIB)
         for i in range(len(Index_layer2)): 
-            if  ( Tools.croissante(Index_layer2[i]) or Tools.decroissante(Index_layer2[i]) ) and ( Tools.croissante(t_index2[i]) or Tools.decroissante(t_index2[i]) ) and (Tools.positif(Index_layer2[i]) or Tools.negatif(Index_layer2[i]) ): #on regarde si ça a du sens physiquement
+            if  ( Tools.croissante(Index_layer2[i]) or Tools.decroissante(Index_layer2[i]) ) and ( Tools.croissante(t_index2[i]) or Tools.decroissante(t_index2[i]) ) \
+				and (Tools.positif(Index_layer2[i]) or Tools.negatif(Index_layer2[i]) ): #on regarde si ça a du sens physiquement
                 Cluster.append(Cluster2[i])
                 Index_cluster.append(Index_cluster2[i])	
                 Index_layer.append(Index_layer2[i])
@@ -365,7 +369,6 @@ def Lbr_CleanCluster(Cluster1,Index_cluster1,Index_layer1,t_index1,z_index1,BIB_
 
 
     return Cluster3, Index_cluster3, Index_layer3, t_index3, z_index3, BIB_true3
-
 
 
 
@@ -542,25 +545,27 @@ def Lbr_AnalyseTrace3(Coef, Index_layer, BIB_true):
 							if Coef[i][j] < 0.004 and Coef[i][j] > 0.003:
 								D_T1 += 1
 							else:
-								D_T1 += 1
+								D_T3 += 1
 
 
 
 	G_B4 = G_B1 +  G_B2 + G_B3
 	G_T4 = G_T1 + G_T2  + G_T3
 
-	D_B4 = D_B1 +  D_B2 +  D_B3
-	D_T4 = D_T1 + D_T2 + D_B4
+	D_B4 = D_B1 + D_B2 + D_B3
+	D_T4 = D_T1 + D_T2 + D_T3
 
 	G_TruePositif = 100 * (G_B2/G_B4) 
-	G_FalsePositif = 100 * (G_T2/G_T4)
-	G_TrueNegative = 100 *(G_B1/G_B4)
+	G_TrueNegative = 100 *((G_B1+G_B3)/G_B4)
+	G_FalsePositif = 100 * ((G_T2+G_T3)/G_T4)
 	G_FalseNegative =100 * (G_T1/G_T4)
 
 	D_TruePositif = 100 * (D_B1/D_B4) 
-	D_FalsePositif = 100 * (D_T1/D_T4)
-	D_TrueNegative = 100 *(D_B2/D_B4)
+	D_TrueNegative = 100 *((D_B2+D_B3)/D_B4)
 	D_FalseNegative =100 * (D_T2/D_T4)
+	D_FalsePositif = 100 * ((D_T1+D_T3)/D_T4)
+	
+	
 	return	 G_B1, G_B2, G_B3, G_B4, G_T1, G_T2, G_T3, G_T4, G_TruePositif, G_FalsePositif, G_TrueNegative, G_FalseNegative, \
 		     D_B1, D_B2, D_B3, D_B4, D_T1, D_T2, D_T3, D_T4,  D_TruePositif, D_FalsePositif, D_TrueNegative, D_FalseNegative
 
