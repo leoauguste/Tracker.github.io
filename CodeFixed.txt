@@ -52,40 +52,7 @@ make -j8
 
 
 
-RunHitAnalysis.py  -i /chemin/du/fichier/nomfichier.HIT.root
 
-RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000003.HIT.root
-cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000003.HIT.root
-
-RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000014.HIT.root
-cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000014.HIT.root
-
-RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000023.HIT.root
-cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000023.HIT.root
-
-RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000054.HIT.root
-cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000054.HIT.root
-
-RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000055.HIT.root
-cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000055.HIT.root
-
-RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000062.HIT.root
-cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000062.HIT.root
-
-RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000067.HIT.root
-cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000067.HIT.root
-
-RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000085.HIT.root
-cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000085.HIT.root
-
-RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000090.HIT.root
-cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000090.HIT.root
-
-RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000092.HIT.root
-cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000092.HIT.root
-
-RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000095.HIT.root
-cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000095.HIT.root
 
 
 ###################################################################
@@ -135,5 +102,41 @@ hadd -f output.root input1.root  input2.root  input3.root  ... inputN.root
 
 hadd -f /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_309680_BeamGas_20MeV.HIT.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000003.HIT.root  /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000014.HIT.root  /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000023.HIT.root  /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000054.HIT.root  /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000055.HIT.root  /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000085.HIT.root  /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000062.HIT.root  /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000067.HIT.root  /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000090.HIT.root  /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000092.HIT.root  /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000095.HIT.root  
 
+###################################################################
+Exemple de transformation local global
+###################################################################
 
+RunHitAnalysis.py  -i /chemin/du/fichier/nomfichier.HIT.root
 
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000003.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000003.HIT.root
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000014.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000014.HIT.root
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000023.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000023.HIT.root
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000054.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000054.HIT.root
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000055.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000055.HIT.root
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000062.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000062.HIT.root
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000067.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000067.HIT.root
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000085.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000085.HIT.root
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000090.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000090.HIT.root
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000092.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000092.HIT.root
+
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000095.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000095.HIT.root
