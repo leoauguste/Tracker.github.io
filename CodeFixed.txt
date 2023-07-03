@@ -52,6 +52,8 @@ make -j8
 
 
 
+RunHitAnalysis.py  -i /eos/user/l/lreynaud/V_one/ttbar/output.V_ttbar_400_s4038.HIT.root
+cp SiHitAnalysis.root /eos/user/l/lreynaud/V_one/ttbar/s4038/Global_Index_s4038_ttbar_400.HIT.root
 
 
 
@@ -106,7 +108,7 @@ hadd -f /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_
 Exemple de transformation local global
 ###################################################################
 
-RunHitAnalysis.py  -i /chemin/du/fichier/nomfichier.HIT.root
+(On peut lancer toute ces samples ensembles dans le terminal si on a plusieur samples à traiter.)
 
 RunHitAnalysis.py  -i /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/s4038_000003.HIT.root
 cp SiHitAnalysis.root /eos/user/l/lreynaud/BIB_Sample/s4038/309680_BeamGas_20MeV/Global_index_s4038_000003.HIT.root
